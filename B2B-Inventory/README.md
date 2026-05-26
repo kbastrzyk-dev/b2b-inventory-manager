@@ -1,18 +1,18 @@
-# Salesforce DX Project: Next Steps
+# B2B Material Order & Inventory Manager
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+## 📌 Project Overview
+This is a custom backend Salesforce application designed to manage complex bulk material orders and automate inventory tracking across multiple European warehouses. It demonstrates enterprise-level Apex architecture, strict adherence to Governor Limits, and robust unit testing.
 
-## How Do You Plan to Deploy Your Changes?
+## 🏢 Business Scenario
+A B2B manufacturer needs a system to deduct physical inventory automatically when a Sales Rep activates an Order. Because a single order might contain industrial materials shipped from different regional hubs (e.g., Berlin vs. London), the system requires a highly intelligent automation layer to deduct the exact quantities from the correct physical locations.
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+## ⚙️ Technical Architecture
+* **Trigger Handler Pattern:** Implemented an `after update` trigger on the standard `Order` object, routing logic to a dedicated handler class to maintain Separation of Concerns.
+* **Bulkification & Scalability:** The `InventoryService` class processes bulk records efficiently using Maps and Sets, ensuring only a single SOQL query and a single DML statement are executed, regardless of how many items are ordered.
+* **Composite Keys:** Developed a complex Apex matching algorithm using Composite Keys (combining `Product2Id` + `Warehouse__c`) to accurately deduct line items shipped from different warehouses on the exact same order.
+* **Enterprise Testing:** Created a reusable `TestDataFactory` to generate standard and custom object records. Achieved **100% Code Coverage** on the Trigger and Handler classes while safely resetting Governor Limits using `Test.startTest()`.
 
-## Configure Your Salesforce DX Project
-
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-## Read All About It
-
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+## 🗄️ Data Model
+* **Standard Objects:** `Account`, `Product2`, `PricebookEntry`, `Order`, `OrderItem`
+* **Custom Objects:** * `Warehouse__c` (Tracks physical locations and capacity)
+  * `Inventory_Item__c` (Junction object linking Products to Warehouses to track specific stock levels and restock thresholds).
